@@ -1,14 +1,16 @@
 import json
 import os
 
-
-# test
+# スクリプトファイルのディレクトリを取得
+script_dir = os.path.dirname(os.path.abspath(__file__))
+# プロジェクトのルートディレクトリを取得（srcの親ディレクトリ）
+project_root = os.path.dirname(script_dir)
 
 # inputディレクトリからJSONファイルを読み込み
-with open('input/invoices.json', 'r') as f:
+with open(os.path.join(project_root, 'input', 'invoices.json'), 'r') as f:
     invoice = json.load(f)
 
-with open('input/plays.json', 'r') as f:
+with open(os.path.join(project_root, 'input', 'plays.json'), 'r') as f:
     plays = json.load(f)
 
 # outputディレクトリが存在しない場合は作成
