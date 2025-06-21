@@ -1,6 +1,9 @@
 import json
 import os
 
+
+# test
+
 # inputディレクトリからJSONファイルを読み込み
 with open('input/invoices.json', 'r') as f:
     invoice = json.load(f)
