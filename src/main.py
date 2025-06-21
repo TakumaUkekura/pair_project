@@ -14,15 +14,50 @@ with open(os.path.join(project_root, 'input', 'plays.json'), 'r') as f:
     plays = json.load(f)
 
 
-invoice_content = "請求書"
+# print("invoce----------------", invoice)
+# print("plays---------------- ", plays)
 
+# enmoku = invoice[0]["performances"]
+# print("seikyuusyo----------------", enmoku)
+
+seikyuusyo = "会社名：" + invoice[0]["customer"] + "\n"
+goukei = 0
+
+for performance in invoice[0]["performances"]:
+    # print("演目名--------------", performance["playID"]) # TODO: plays.jsonから演目名を取得したい
+    # print("観客数--------------", performance["audience"])
+    # print("金額----------------", "〇〇円") # TODO: plays.jsonから金額を計算したい
+
+    if performance["playID"] in ["As You Like It"]:
+        Ryoukin = 40000 # 基本料金40000$
+        if (performance["audience"] > 30):# 観客数が30人を超過する場合
+            Ryoukin += (1000 * (performance["audience"] - 30)) # 超過一人当たり1000$
+    else:
+        Ryoukin = 30000 # 基本料金30000$
+        if (performance["audience"] > 20): # 観客数が20人を超える場合、
+            Ryoukin += 1000 # 10000$を追加した上で、
+            Ryoukin += (500 * (performance["audience"] - 20)) # さらに超過一人当たり500$
+
+    goukei += Ryoukin
+    
+    seikyuusyo += "・" + performance["playID"] + "（観客数：" + str(performance["audience"]) + "人、" + "金額：" + str(Ryoukin) + "円）\n"
+
+seikyuusyo += "合計金額：" + str(goukei) + "円"
+
+print("seikyuusyo----------------", seikyuusyo)
+
+# seikyuusyo = "会社名：" + invoice[0]["customer"] + "\n" + "・" + invoice[0]["performances"][0]["playID"] + "（観客数：" + str(invoice[0]["performances"][0]["audience"]) + "人、" + "金額：" + "〇〇円）"
+
+# print("seikyuusyo----------------", seikyuusyo)
+
+# invoice_content = "請求書" + str(invoice)
 
 # ルートディレクトリのoutputディレクトリが存在しない場合は作成
 output_dir = os.path.join(project_root, 'output')
 os.makedirs(output_dir, exist_ok=True)
 
 # テキストファイルとして出力
-with open(os.path.join(output_dir, 'invoice.txt'), 'w', encoding='utf-8') as f:
-    f.write(invoice_content)
+# with open(os.path.join(output_dir, 'invoice.txt'), 'w', encoding='utf-8') as f:
+#     f.write(invoice_content)
 
-print("データがoutputディレクトリにテキストファイルとして出力されました:")
+# print("データがoutputディレクトリにテキストファイルとして出力されました:")
