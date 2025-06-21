@@ -13,22 +13,23 @@ with open(os.path.join(project_root, 'input', 'invoices.json'), 'r') as f:
 with open(os.path.join(project_root, 'input', 'plays.json'), 'r') as f:
     plays = json.load(f)
 
-# outputディレクトリが存在しない場合は作成
-os.makedirs('output', exist_ok=True)
+# ルートディレクトリのoutputディレクトリが存在しない場合は作成
+output_dir = os.path.join(project_root, 'output')
+os.makedirs(output_dir, exist_ok=True)
 
 # テキストファイルとして出力
-with open('output/invoice_data.txt', 'w', encoding='utf-8') as f:
+with open(os.path.join(output_dir, 'invoice_data.txt'), 'w', encoding='utf-8') as f:
     f.write("=== Invoice Data ===\n")
     f.write(json.dumps(invoice, indent=2, ensure_ascii=False))
     f.write("\n\n")
 
-with open('output/plays_data.txt', 'w', encoding='utf-8') as f:
+with open(os.path.join(output_dir, 'plays_data.txt'), 'w', encoding='utf-8') as f:
     f.write("=== Plays Data ===\n")
     f.write(json.dumps(plays, indent=2, ensure_ascii=False))
     f.write("\n")
 
 # 統合されたデータも出力
-with open('output/combined_data.txt', 'w', encoding='utf-8') as f:
+with open(os.path.join(output_dir, 'combined_data.txt'), 'w', encoding='utf-8') as f:
     f.write("=== Combined Data ===\n")
     f.write("Invoice:\n")
     f.write(json.dumps(invoice, indent=2, ensure_ascii=False))
