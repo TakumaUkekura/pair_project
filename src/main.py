@@ -19,21 +19,21 @@ with open(os.path.join(project_root, 'input', 'plays.json'), 'r') as f:
 # enmoku = invoice[0]["performances"]
 # print("seikyuusyo----------------", enmoku)
 
-seikyuusyo = "会社名：" + invoice[0]["customer"] + "\n"
+seikyuusyo = "請求書" + "\n"
+seikyuusyo += "会社名：" + invoice[0]["customer"] + "\n"
 goukei = 0
+point = 0
 
 for performance in invoice[0]["performances"]:
-    # print("演目名--------------", performance["playID"]) # TODO: plays.jsonから演目名を取得したい
-    # print("観客数--------------", performance["audience"])
-    # print("金額----------------", "〇〇円") # TODO: plays.jsonから金額を計算したい
 
-    print("enmok-------------------", plays[performance["playID"]]["name"], performance["playID"])
+    point += 1 * (performance["audience"] - 30)
 
-    if performance["playID"] in ["As You Like It"]:
+    if plays[performance["playID"]]["type"] == "tragedy":
         Ryoukin = 40000 # 基本料金40000$
         if (performance["audience"] > 30):# 観客数が30人を超過する場合
             Ryoukin += (1000 * (performance["audience"] - 30)) # 超過一人当たり1000$
-    else:
+    if plays[performance["playID"]]["type"] == "comedy":
+        point += 1 * performance["audience"]//5
         Ryoukin = 30000 # 基本料金30000$
         if (performance["audience"] > 20): # 観客数が20人を超える場合、
             Ryoukin += 1000 # 10000$を追加した上で、
@@ -41,11 +41,12 @@ for performance in invoice[0]["performances"]:
 
     goukei += Ryoukin
     
-    seikyuusyo += "・" + performance["playID"] + "（観客数：" + str(performance["audience"]) + "人、" + "金額：" + str(Ryoukin) + "円）\n"
+    seikyuusyo += "・" + plays[performance["playID"]]["name"] + "（観客数：" + str(performance["audience"]) + "人、" + "金額：" + str(Ryoukin) + "円）\n"
 
-seikyuusyo += "合計金額：" + str(goukei) + "円"
+seikyuusyo += "合計金額：" + str(goukei) + "円\n"
+seikyuusyo += "獲得ポイント：" + str(point) + "pt"
 
-print("seikyuusyo----------------", seikyuusyo)
+print(seikyuusyo)
 
 # seikyuusyo = "会社名：" + invoice[0]["customer"] + "\n" + "・" + invoice[0]["performances"][0]["playID"] + "（観客数：" + str(invoice[0]["performances"][0]["audience"]) + "人、" + "金額：" + "〇〇円）"
 
