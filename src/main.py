@@ -17,7 +17,14 @@ def input():
         plays = json.load(f)
     return invoice, plays
 
+
 def create_invoice_content(invoice, plays):
+    invoice_title = "請求書"
+    company_name = "会社名：" + invoice[0]["customer"]
+    trade_contents = ""
+    total_price = 0
+    total_point = 0
+
     seikyuusyo = "請求書" + "\n"
     seikyuusyo += "会社名：" + invoice[0]["customer"] + "\n"
     goukei = 0
