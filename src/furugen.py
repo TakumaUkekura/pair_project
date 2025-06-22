@@ -16,11 +16,8 @@ def load_invoces_json():
         return json.load(f)
 
 def load_plays_json():
-    with open(os.path.join(project_root, 'input', 'plays.json'), 'r') as f:
+    with open(os.path.join(project_root, 'input', 'plays.json'), 'r') as f: # TODO: invoeceと同様の記述なのでまとめたい
         return json.load(f)
-
-def get_title():
-    return "請求書"
 
 def get_company_name(invoice):
     company_name = invoice[0]["customer"]
@@ -35,20 +32,14 @@ def get_play_info(play_id):
         play_type = plays[play_id]["type"]
     return play_name, play_type
 
-def get_base_price(play_type):
-    base_price = 0
-    if play_type == "comedy":
-        base_price = COMEDY_PRICE
-    if play_type == "tragedy":
-        base_price = TRAGEDY_PRICE
-    return base_price
-
 def calc_price(play_type, audience):
-    price = get_base_price(play_type)
-    if play_type == "tragedy":
+    price = 0
+    if play_type == "tragedy": # TODO: 直打ちは避けたい。定数に切り分ける？
+        price = TRAGEDY_PRICE
         if (audience > 30):
             price += (1000 * (audience - 30))
     if play_type == "comedy":
+        price = COMEDY_PRICE
         if (audience > 20):
             price += 1000
             price += (500 * (audience - 20))
@@ -61,37 +52,49 @@ def calc_point(play_type, audience):
       point += 1 * audience//5
     return point
 
-def create_invoice_content(invoice):
-    trade_contents = ""
+def create_invoice_header(invoice_data):
+    invoice_header = ""
+    invoice_title = "請求書"
+    company_name = get_company_name(invoice_data)
+    invoice_header += invoice_title + "\n"
+    invoice_header += "会社名：" + company_name + "\n"
+    return invoice_header
 
-    invoice_title = get_title()
-    company_name = get_company_name(invoice)
+def create_invoice_row(play_name, audience, price):
+    invoice_row = ""
+    invoice_row += "・" + play_name
+    invoice_row += "（観客数：" + str(audience) + "人、"
+    invoice_row += "金額：" + str(price) + "円）\n"
+    return invoice_row
+
+def create_invoice_footer(total_price, total_point):
+    invoice_footer = ""
+    invoice_footer += "合計金額：" + str(total_price) + "円\n"
+    invoice_footer += "獲得ポイント：" + str(total_point) + "pt"
+    return invoice_footer
+
+def create_invoice_content(invoice_data):
+    invoice_body = ""
     total_price = 0
     total_point = 0
 
-    trade_contents += invoice_title + "\n"
-    trade_contents += "会社名：" + company_name + "\n"
+    invoice_header = create_invoice_header(invoice_data)
 
-    for performance in invoice[0]["performances"]:
-        play_name, play_type = get_play_info(performance["playID"])
-        if (play_name == "" or play_type == ""):
+    for performance in invoice_data[0]["performances"]:
+
+        play_name, play_type = get_play_info(performance["playID"]) # TODO: for文の中で毎回playをロードしているのを避けたい
+        if (play_name == "" or play_type == ""): # TODO: エラー判定はここで行うべきなのか？他の判定の考慮も
             print("play is invalid")
             continue
-        
+
         audience = performance["audience"]
-        price = calc_price(play_type, audience)
-        point = calc_point(play_type, audience)
+        invoice_body += create_invoice_row(play_name, audience, calc_price(play_type, audience))
+        total_price += calc_price(play_type, audience)
+        total_point += calc_point(play_type, audience)
 
-        trade_contents += "・" + play_name
-        trade_contents += "（観客数：" + str(audience) + "人、"
-        trade_contents += "金額：" + str(price) + "円）\n"
+    invoice_footer = create_invoice_footer(total_price, total_point)
 
-        total_price += price
-        total_point += point
-
-    trade_contents += "合計金額：" + str(total_price) + "円\n"
-    trade_contents += "獲得ポイント：" + str(total_point) + "pt"
-
+    trade_contents = invoice_header + invoice_body + invoice_footer
     return trade_contents
 
 def output(output):
@@ -105,8 +108,8 @@ def output(output):
     # print("データがoutputディレクトリにテキストファイルとして出力されました:")
 
 def main():
-    invoice = load_invoces_json()
-    invoice_content = create_invoice_content(invoice)
+    invoice_data = load_invoces_json()
+    invoice_content = create_invoice_content(invoice_data)
     output(invoice_content)
     
 main()
