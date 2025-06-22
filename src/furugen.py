@@ -26,12 +26,14 @@ def get_company_name(invoice):
     company_name = invoice[0]["customer"]
     return company_name
 
-def get_play_type(play_id):
+def get_play_info(play_id):
     plays = load_plays_json()
+    play_name = ""
     play_type = ""
     if play_id in plays:
+        play_name = plays[play_id]["name"]
         play_type = plays[play_id]["type"]
-    return play_type
+    return play_name, play_type
 
 def get_base_price(play_type):
     base_price = 0
@@ -50,12 +52,16 @@ def calc_price(play_type, audience):
         if (audience > 20):
             price += 1000
             price += (500 * (audience - 20))
+            price += (300 * audience)
     return price
 
 def calc_point(play_type, audience):
-    return ""
+    point = 1 * (audience - 30)
+    if play_type == "comedy":
+      point += 1 * audience//5
+    return point
 
-def create_invoice_content(invoice, plays):
+def create_invoice_content(invoice):
     trade_contents = ""
 
     invoice_title = get_title()
@@ -67,20 +73,21 @@ def create_invoice_content(invoice, plays):
     trade_contents += "会社名：" + company_name + "\n"
 
     for performance in invoice[0]["performances"]:
-        play_type = get_play_type(performance["playID"])
-        if (play_type == ""):
-            print("play type is unkown")
+        play_name, play_type = get_play_info(performance["playID"])
+        if (play_name == "" or play_type == ""):
+            print("play is invalid")
             continue
+        
+        audience = performance["audience"]
+        price = calc_price(play_type, audience)
+        point = calc_point(play_type, audience)
 
-        price = calc_price(play_type, performance["audience"])
+        trade_contents += "・" + play_name
+        trade_contents += "（観客数：" + str(audience) + "人、"
+        trade_contents += "金額：" + str(price) + "円）\n"
 
-        if play_type == "comedy":
-            total_point += 1 * performance["audience"]//5
-
-        trade_contents += "・" + plays[performance["playID"]]["name"] + "（観客数：" + str(performance["audience"]) + "人、" + "金額：" + str(price) + "円）\n"
-
-        total_point += 1 * (performance["audience"] - 30)
         total_price += price
+        total_point += point
 
     trade_contents += "合計金額：" + str(total_price) + "円\n"
     trade_contents += "獲得ポイント：" + str(total_point) + "pt"
@@ -99,8 +106,7 @@ def output(output):
 
 def main():
     invoice = load_invoces_json()
-    plays = load_plays_json()
-    invoice_content = create_invoice_content(invoice, plays)
+    invoice_content = create_invoice_content(invoice)
     output(invoice_content)
     
 main()
