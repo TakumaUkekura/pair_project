@@ -13,7 +13,6 @@ with open(os.path.join(project_root, 'input', 'invoices.json'), 'r') as f:
 with open(os.path.join(project_root, 'input', 'plays.json'), 'r') as f:
     plays = json.load(f)
 
-
 # print("invoce----------------", invoice)
 # print("plays---------------- ", plays)
 
@@ -27,6 +26,8 @@ for performance in invoice[0]["performances"]:
     # print("演目名--------------", performance["playID"]) # TODO: plays.jsonから演目名を取得したい
     # print("観客数--------------", performance["audience"])
     # print("金額----------------", "〇〇円") # TODO: plays.jsonから金額を計算したい
+
+    print("enmok-------------------", plays[performance["playID"]]["name"], performance["playID"])
 
     if performance["playID"] in ["As You Like It"]:
         Ryoukin = 40000 # 基本料金40000$
