@@ -17,19 +17,7 @@ def input():
         plays = json.load(f)
     return invoice, plays
 
-def output(output):
-    print(output)
-    # # ルートディレクトリのoutputディレクトリが存在しない場合は作成
-    # os.makedirs(output_dir, exist_ok=True)
-    # # テキストファイルとして出力
-    # with open(os.path.join(output_dir, 'invoice.txt'), 'w', encoding='utf-8') as f:
-    #     f.write(output)
-
-    # print("データがoutputディレクトリにテキストファイルとして出力されました:")
-
-def main():
-    invoice, plays = input()
-
+def create_invoice_content(invoice, plays):
     seikyuusyo = "請求書" + "\n"
     seikyuusyo += "会社名：" + invoice[0]["customer"] + "\n"
     goukei = 0
@@ -57,6 +45,22 @@ def main():
     seikyuusyo += "合計金額：" + str(goukei) + "円\n"
     seikyuusyo += "獲得ポイント：" + str(point) + "pt"
 
-    output(seikyuusyo)
+    invoice_content = seikyuusyo
+    return invoice_content
 
+def output(output):
+    print(output)
+    # # ルートディレクトリのoutputディレクトリが存在しない場合は作成
+    # os.makedirs(output_dir, exist_ok=True)
+    # # テキストファイルとして出力
+    # with open(os.path.join(output_dir, 'invoice.txt'), 'w', encoding='utf-8') as f:
+    #     f.write(output)
+
+    # print("データがoutputディレクトリにテキストファイルとして出力されました:")
+
+def main():
+    invoice, plays = input()
+    invoice_content = create_invoice_content(invoice, plays)
+    output(invoice_content)
+    
 main()
