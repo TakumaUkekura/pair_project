@@ -8,84 +8,66 @@ project_root = os.path.dirname(script_dir)
 # ルートディレクトリのoutputディレクトリが存在しない場合は作成
 output_dir = os.path.join(project_root, 'output')
 
-COMEDY_PRICE = 30000
-TRAGEDY_PRICE = 40000
-
-def load_invoces_json():
+def input():
+    # inputディレクトリからJSONファイルを読み込み
     with open(os.path.join(project_root, 'input', 'invoices.json'), 'r') as f:
-        return json.load(f)
+        invoice = json.load(f)
 
-def load_plays_json():
     with open(os.path.join(project_root, 'input', 'plays.json'), 'r') as f:
-        return json.load(f)
+        plays = json.load(f)
+    return invoice, plays
 
-def get_title():
-    return "請求書"
-
-def get_company_name(invoice):
-    company_name = invoice[0]["customer"]
-    return company_name
-
-def get_play_type(play_id):
-    plays = load_plays_json()
-    play_type = ""
-    if play_id in plays:
-        play_type = plays[play_id]["type"]
-    return play_type
-
-def get_base_price(play_type):
-    base_price = 0
-    if play_type == "comedy":
-        base_price = COMEDY_PRICE
-    if play_type == "tragedy":
-        base_price = TRAGEDY_PRICE
-    return base_price
-
-def calc_price(play_type, audience):
-    price = get_base_price(play_type)
-    if play_type == "tragedy":
-        if (audience > 30):
-            price += (1000 * (audience - 30))
-    if play_type == "comedy":
-        if (audience > 20):
-            price += 1000
-            price += (500 * (audience - 20))
-    return price
-
-def calc_point(play_type, audience):
-    return ""
 
 def create_invoice_content(invoice, plays):
-    trade_contents = ""
 
-    invoice_title = get_title()
-    company_name = get_company_name(invoice)
-    total_price = 0
-    total_point = 0
+    invoice_title = "請求書"
+    company_name = "会社名：" + invoice[0]["customer"]
+    trade_content = ""
 
-    trade_contents += invoice_title + "\n"
-    trade_contents += "会社名：" + company_name + "\n"
+    trade_content += invoice_title + "\n"
+    trade_content += company_name + "\n"
 
+    performance_name_list = get_performances_name_list(invoice, plays)
+    audience_number_list = get_audience_number_list(invoice)
+    price_list = get_price_list(invoice, plays)
+
+    for i in range(len(invoice[0]["performances"])):
+        trade_content += "・" + performance_name_list[i] + "（観客数："
+        trade_content += str(audience_number_list[i]) + "人、金額："
+        trade_content += str(price_list[i]) + "）\n"
+    
+    invoice_content = trade_content
+
+    return invoice_content
+
+
+def get_performances_name_list(invoice, plays):
+    performance_name_list = []
     for performance in invoice[0]["performances"]:
-        play_type = get_play_type(performance["playID"])
-        if (play_type == ""):
-            print("play type is unkown")
-            continue
+        performance_name_list.append(plays[performance["playID"]]["name"])
+    return performance_name_list
 
-        price = calc_price(play_type, performance["audience"])
+def get_audience_number_list(invoice):
+    audience_number_list = []
+    for performance in invoice[0]["performances"]:
+        audience_number_list.append(performance["audience"])
+    return audience_number_list
 
-        if play_type == "comedy":
-            total_point += 1 * performance["audience"]//5
+def get_price_list(invoice, plays):
+    price_list = []
+    for performance in invoice[0]["performances"]:
+        if plays[performance["playID"]]["type"] == "tragedy":
+            Ryoukin = 40000 # 基本料金40000$
+            if (performance["audience"] > 30):# 観客数が30人を超過する場合
+                Ryoukin += (1000 * (performance["audience"] - 30)) # 超過一人当たり1000$
+        if plays[performance["playID"]]["type"] == "comedy":
+            Ryoukin = 30000 # 基本料金30000$
+            if (performance["audience"] > 20): # 観客数が20人を超える場合、
+                Ryoukin += 1000 # 10000$を追加した上で、
+                Ryoukin += (500 * (performance["audience"] - 20)) # さらに超過一人当たり500$
+        price_list.append(Ryoukin)
+    return price_list
 
-        trade_contents += "・" + plays[performance["playID"]]["name"] + "（観客数：" + str(performance["audience"]) + "人、" + "金額：" + str(price) + "円）\n"
-
-        total_point += 1 * (performance["audience"] - 30)
-        total_price += price
-
-    trade_contents += "合計金額：" + str(total_price) + "円\n"
-    trade_contents += "獲得ポイント：" + str(total_point) + "pt"
-
-    return trade_contents
 
 def output(output):
     print(output)
@@ -98,8 +80,7 @@ def output(output):
     # print("データがoutputディレクトリにテキストファイルとして出力されました:")
 
 def main():
-    invoice = load_invoces_json()
-    plays = load_plays_json()
+    invoice, plays = input()
     invoice_content = create_invoice_content(invoice, plays)
     output(invoice_content)
     
