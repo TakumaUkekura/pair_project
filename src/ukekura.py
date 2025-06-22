@@ -53,19 +53,24 @@ def get_audience_number_list(invoice):
         audience_number_list.append(performance["audience"])
     return audience_number_list
 
+def get_price(play_type, audience_number):
+    if play_type == "tragedy":
+        price= 40000 # 基本料金40000$
+        if (audience_number > 30):# 観客数が30人を超過する場合
+            price+= (1000 * (audience_number - 30)) # 超過一人当たり1000$
+    if play_type == "comedy":
+        price= 30000 # 基本料金30000$
+        if (audience_number > 20): # 観客数が20人を超える場合、
+            price+= 1000 # 10000$を追加した上で、
+    return price
+
 def get_price_list(invoice, plays):
     price_list = []
     for performance in invoice[0]["performances"]:
-        if plays[performance["playID"]]["type"] == "tragedy":
-            Ryoukin = 40000 # 基本料金40000$
-            if (performance["audience"] > 30):# 観客数が30人を超過する場合
-                Ryoukin += (1000 * (performance["audience"] - 30)) # 超過一人当たり1000$
-        if plays[performance["playID"]]["type"] == "comedy":
-            Ryoukin = 30000 # 基本料金30000$
-            if (performance["audience"] > 20): # 観客数が20人を超える場合、
-                Ryoukin += 1000 # 10000$を追加した上で、
-                Ryoukin += (500 * (performance["audience"] - 20)) # さらに超過一人当たり500$
-        price_list.append(Ryoukin)
+        play_type = plays[performance["playID"]]["type"]
+        audience_number = performance["audience"]
+        price = get_price(play_type, audience_number)
+        price_list.append(price)
     return price_list
 
 
