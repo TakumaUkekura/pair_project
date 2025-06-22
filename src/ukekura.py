@@ -18,6 +18,50 @@ def input():
     return invoice, plays
 
 
+
+def get_performances_name_list(invoice, plays):
+    performance_name_list = []
+    for performance in invoice[0]["performances"]:
+        performance_name_list.append(plays[performance["playID"]]["name"])
+    return performance_name_list
+
+def get_audience_number_list(invoice):
+    audience_number_list = []
+    for performance in invoice[0]["performances"]:
+        audience_number_list.append(performance["audience"])
+    return audience_number_list
+
+
+def get_price_list(invoice, plays):
+    price_list = []
+    for performance in invoice[0]["performances"]:
+        play_type = plays[performance["playID"]]["type"]
+        audience_number = performance["audience"]
+        price = get_price(play_type, audience_number)
+        price_list.append(price)
+    return price_list
+
+def get_price(play_type, audience_number):
+    if play_type == "tragedy":
+       price = culc_comedy_price()
+    if play_type == "comedy":
+        price = culc_comedy_price()
+    return price
+
+def culc_tragedy_price(audience_number):
+    price= 40000 # 基本料金40000$
+    if (audience_number > 30):# 観客数が30人を超過する場合
+        price+= 1000 * (audience_number - 30)
+    return price
+
+def culc_comedy_price(audience_number):
+    price= 30000
+    price += 300 * audience_number
+    if (audience_number > 20): # 観客数が20人を超える場合、
+        price+= 1000 
+        price += (500 * (audience_number - 20))
+    return price
+
 def create_invoice_content(invoice, plays):
 
     invoice_title = "請求書"
@@ -39,40 +83,6 @@ def create_invoice_content(invoice, plays):
     invoice_content = trade_content
 
     return invoice_content
-
-
-def get_performances_name_list(invoice, plays):
-    performance_name_list = []
-    for performance in invoice[0]["performances"]:
-        performance_name_list.append(plays[performance["playID"]]["name"])
-    return performance_name_list
-
-def get_audience_number_list(invoice):
-    audience_number_list = []
-    for performance in invoice[0]["performances"]:
-        audience_number_list.append(performance["audience"])
-    return audience_number_list
-
-def get_price(play_type, audience_number):
-    if play_type == "tragedy":
-        price= 40000 # 基本料金40000$
-        if (audience_number > 30):# 観客数が30人を超過する場合
-            price+= (1000 * (audience_number - 30)) # 超過一人当たり1000$
-    if play_type == "comedy":
-        price= 30000 # 基本料金30000$
-        if (audience_number > 20): # 観客数が20人を超える場合、
-            price+= 1000 # 10000$を追加した上で、
-    return price
-
-def get_price_list(invoice, plays):
-    price_list = []
-    for performance in invoice[0]["performances"]:
-        play_type = plays[performance["playID"]]["type"]
-        audience_number = performance["audience"]
-        price = get_price(play_type, audience_number)
-        price_list.append(price)
-    return price_list
-
 
 def output(output):
     print(output)
