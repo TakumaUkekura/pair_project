@@ -1,23 +1,15 @@
 import json
 import os
 
-# スクリプトファイルのディレクトリを取得
 script_dir = os.path.dirname(os.path.abspath(__file__))
-# プロジェクトのルートディレクトリを取得（srcの親ディレクトリ）
+
 project_root = os.path.dirname(script_dir)
 
-# inputディレクトリからJSONファイルを読み込み
 with open(os.path.join(project_root, 'input', 'invoices.json'), 'r') as f:
     invoice = json.load(f)
 
 with open(os.path.join(project_root, 'input', 'plays.json'), 'r') as f:
     plays = json.load(f)
-
-# print("invoce----------------", invoice)
-# print("plays---------------- ", plays)
-
-# enmoku = invoice[0]["performances"]
-# print("seikyuusyo----------------", enmoku)
 
 seikyuusyo = "請求書" + "\n"
 seikyuusyo += "会社名：" + invoice[0]["customer"] + "\n"
@@ -26,7 +18,6 @@ point = 0
 
 for performance in invoice[0]["performances"]:
 
-    point += 1 * (performance["audience"] - 30)
 
     if plays[performance["playID"]]["type"] == "tragedy":
         Ryoukin = 40000 # 基本料金40000$
@@ -41,25 +32,18 @@ for performance in invoice[0]["performances"]:
 
     goukei += Ryoukin
     
+    if performance["audience"] > 30:
+        point += 1 * (performance["audience"] - 30)
+    
     seikyuusyo += "・" + plays[performance["playID"]]["name"] + "（観客数：" + str(performance["audience"]) + "人、" + "金額：" + str(Ryoukin) + "円）\n"
 
 seikyuusyo += "合計金額：" + str(goukei) + "円\n"
 seikyuusyo += "獲得ポイント：" + str(point) + "pt"
 
+print("\n==================== 出力内容 ====================\n")
 print(seikyuusyo)
 
-# seikyuusyo = "会社名：" + invoice[0]["customer"] + "\n" + "・" + invoice[0]["performances"][0]["playID"] + "（観客数：" + str(invoice[0]["performances"][0]["audience"]) + "人、" + "金額：" + "〇〇円）"
-
-# print("seikyuusyo----------------", seikyuusyo)
-
-# invoice_content = "請求書" + str(invoice)
-
-# ルートディレクトリのoutputディレクトリが存在しない場合は作成
+print("\n========== 請求書がテキストファイルとして出力されました。==========\n")
 output_dir = os.path.join(project_root, 'output')
 os.makedirs(output_dir, exist_ok=True)
-
-# テキストファイルとして出力
-# with open(os.path.join(output_dir, 'invoice.txt'), 'w', encoding='utf-8') as f:
-#     f.write(invoice_content)
-
 # print("データがoutputディレクトリにテキストファイルとして出力されました:")
