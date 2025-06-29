@@ -1,0 +1,15 @@
+[
+  {
+    "customer": "TestCase No.28",
+    "performances": [
+      {
+        "playID": "hamlet",
+        "audience": 31
+      },
+      {
+        "playID": "othello",
+        "audience": 31
+      }
+    ]
+  }
+]

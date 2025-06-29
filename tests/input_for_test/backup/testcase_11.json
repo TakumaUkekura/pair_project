@@ -1,0 +1,19 @@
+[
+  {
+    "customer": "TestCase No.11",
+    "performances": [
+      {
+        "playID": "hamlet",
+        "audience": 31
+      },
+      {
+        "playID": "as-like",
+        "audience": 31
+      },
+      {
+        "playID": "othello",
+        "audience": 31
+      }
+    ]
+  }
+]
