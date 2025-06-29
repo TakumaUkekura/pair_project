@@ -34,6 +34,7 @@ def main():
             if (performance["audience"] > 20): # 観客数が20人を超える場合、
                 Ryoukin += 10000 # 10000$を追加した上で、
                 Ryoukin += (500 * (performance["audience"] - 20)) # さらに超過一人当たり500$
+            Ryoukin += 300 * performance["audience"]
 
         goukei += Ryoukin
         
