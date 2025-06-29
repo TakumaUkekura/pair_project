@@ -18,54 +18,43 @@ def main():
     """メイン処理関数"""
 
     def create_invoice_content():
-        seikyuusyo = "請求書" + "\n"
-        seikyuusyo += invoice[0]["customer"] + "\n"
-        goukei = 0
-        point = 0
-        performance_data = []
-    
-        for performance in invoice[0]["performances"]:
-            if plays[performance["playID"]]["type"] == "tragedy":
-                Ryoukin = 40000 # 基本料金40000$
-                if (performance["audience"] > 30):# 観客数が30人を超過する場合
-                    Ryoukin += (1000 * (performance["audience"] - 30)) # 超過一人当たり1000$
-            if plays[performance["playID"]]["type"] == "comedy":
-                point += 1 * performance["audience"]//5
-                Ryoukin = 30000 # 基本料金30000$
-                if (performance["audience"] > 20): # 観客数が20人を超える場合、
-                    Ryoukin += 10000 # 10000$を追加した上で、
-                    Ryoukin += (500 * (performance["audience"] - 20)) # さらに超過一人当たり500$
-                Ryoukin += 300 * performance["audience"]
-    
-            goukei += Ryoukin
-            
-            if performance["audience"] > 30:
-                point += 1 * (performance["audience"] - 30)
-
-            performance_data.append({
-                "name": plays[performance["playID"]]["name"],
-                "audience": performance["audience"],
-                "price": Ryoukin
-            })
-            
-        print(performance_data)
-
-        def format_invoice(performance_data, seikyuusyo):
-            for p in performance_data:
+        def calc():
+            seikyuusyo = "請求書" + "\n"
+            seikyuusyo += invoice[0]["customer"] + "\n"
+            goukei = 0
+            point = 0
+            performance_data = []
+            for performance in invoice[0]["performances"]:
                 if plays[performance["playID"]]["type"] == "tragedy":
                     Ryoukin = 40000 # 基本料金40000$
                     if (performance["audience"] > 30):# 観客数が30人を超過する場合
                         Ryoukin += (1000 * (performance["audience"] - 30)) # 超過一人当たり1000$
                 if plays[performance["playID"]]["type"] == "comedy":
+                    point += 1 * performance["audience"]//5
                     Ryoukin = 30000 # 基本料金30000$
                     if (performance["audience"] > 20): # 観客数が20人を超える場合、
                         Ryoukin += 10000 # 10000$を追加した上で、
                         Ryoukin += (500 * (performance["audience"] - 20)) # さらに超過一人当たり500$
                     Ryoukin += 300 * performance["audience"]
 
+                goukei += Ryoukin
+
+                if performance["audience"] > 30:
+                    point += 1 * (performance["audience"] - 30)
+
+                performance_data.append({
+                    "name": plays[performance["playID"]]["name"],
+                    "audience": performance["audience"],
+                    "price": Ryoukin
+                })
+            return performance_data, seikyuusyo, goukei, point
+        
+        def format_invoice(performance_data, seikyuusyo):
+            for p in performance_data:
                 seikyuusyo += "・" + p["name"] + "（観客数：" + str(p["audience"]) + "人、" + "金額：$" + str(p["price"]) + "）\n"
             return seikyuusyo
-        
+
+        performance_data, seikyuusyo, goukei, point = calc()
         seikyuusyo = format_invoice(performance_data, seikyuusyo)
 
         seikyuusyo += "合計金額：$" + str(goukei) + "\n"
